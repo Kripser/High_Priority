@@ -20,6 +20,7 @@ offset_bottom = 400.0
 text = "Start"
 
 [node name="Settings" type="Button" parent="."]
+layout_mode = 0
 offset_left = 510.0
 offset_top = 408.0
 offset_right = 631.0
@@ -27,6 +28,7 @@ offset_bottom = 503.0
 text = "Settings"
 
 [node name="Exit" type="Button" parent="."]
+layout_mode = 0
 offset_left = 509.0
 offset_top = 508.0
 offset_right = 630.0
