@@ -1,0 +1,36 @@
+[gd_scene load_steps=7 format=3 uid="uid://cnidumdyw5rum"]
+
+[ext_resource type="PackedScene" uid="uid://dxmsudkuo4g8v" path="res://Scenes/player.tscn" id="1_r72nm"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_r72nm"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_r72nm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y1fmg"]
+albedo_color = Color(1, 0.694118, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y1fmg"]
+
+[sub_resource type="Environment" id="Environment_r72nm"]
+
+[node name="PlayerDebug" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("1_r72nm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0281769, 1.27464, -1.10296)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(4.17095, 0, 0, 0, 1, 0, 0, 0, 2.49678, 0, 0, 0)
+physics_material_override = SubResource("PhysicsMaterial_r72nm")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(2.09473, 0, 0, 0, 1, 0, 0, 0, 2.85975, 0, 0, 0)
+mesh = SubResource("PlaneMesh_r72nm")
+surface_material_override/0 = SubResource("StandardMaterial3D_y1fmg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(4.27781, 0, 0, 0, 0.0744846, 0, 0, 0, 5.84089, 0, 0, 0)
+shape = SubResource("BoxShape3D_y1fmg")
+debug_color = Color(0.935039, 0.215821, 0.353976, 0.42)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_r72nm")

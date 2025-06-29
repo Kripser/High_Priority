@@ -1,5 +1,25 @@
-[gd_scene format=3 uid="uid://dxmsudkuo4g8v"]
+[gd_scene load_steps=5 format=3 uid="uid://dxmsudkuo4g8v"]
+
+[ext_resource type="Script" uid="uid://c3lu6okgovq8m" path="res://Scripts/Player.gd" id="1_v0iea"]
+[ext_resource type="Script" uid="uid://b0o34poesurhb" path="res://Scripts/PlayerCamera.gd" id="2_cvnsp"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v0iea"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_f60y1"]
 
 [node name="Player" type="Node3D"]
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0159072, 0)
+script = ExtResource("1_v0iea")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
+mesh = SubResource("CylinderMesh_v0iea")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+shape = SubResource("CylinderShape3D_f60y1")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 0.998975, 0.0452758, 0, -0.0452758, 0.998975, 0, 0.706766, -0.386712)
+fov = 90.0
+script = ExtResource("2_cvnsp")
