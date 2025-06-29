@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dxmsudkuo4g8v"]
+[gd_scene load_steps=6 format=3 uid="uid://dxmsudkuo4g8v"]
 
 [ext_resource type="Script" uid="uid://c3lu6okgovq8m" path="res://Scripts/Player.gd" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://b0o34poesurhb" path="res://Scripts/PlayerCamera.gd" id="2_cvnsp"]
+[ext_resource type="Script" uid="uid://cw41vvhlcv8mo" path="res://Scripts/PlayerUI.gd" id="3_6t5aa"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_v0iea"]
 
@@ -9,17 +10,31 @@
 
 [node name="Player" type="Node3D"]
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+[node name="PlayerBody" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0159072, 0)
 script = ExtResource("1_v0iea")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody"]
 mesh = SubResource("CylinderMesh_v0iea")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CylinderShape3D_f60y1")
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
+[node name="Camera3D" type="Camera3D" parent="PlayerBody"]
 transform = Transform3D(1, 0, 0, 0, 0.998975, 0.0452758, 0, -0.0452758, 0.998975, 0, 0.706766, -0.386712)
 fov = 90.0
 script = ExtResource("2_cvnsp")
+
+[node name="UI" type="Control" parent="PlayerBody/Camera3D"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_6t5aa")
+
+[node name="Role" type="Label" parent="PlayerBody/Camera3D/UI"]
+layout_mode = 0
+offset_left = 387.0
+offset_top = 332.0
+offset_right = 778.0
+offset_bottom = 500.0
