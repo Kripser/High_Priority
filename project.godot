@@ -23,6 +23,10 @@ window/vsync/vsync_mode=0
 
 project/assembly_name="High Priority"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/terrain_3d/plugin.cfg")
+
 [input]
 
 move_forward={

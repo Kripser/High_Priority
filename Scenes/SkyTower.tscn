@@ -1,4 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://bxd8advqxi8tw"]
+[gd_scene load_steps=12 format=3 uid="uid://bxd8advqxi8tw"]
+
+[ext_resource type="PackedScene" uid="uid://dxmsudkuo4g8v" path="res://Scenes/player.tscn" id="1_m0jva"]
 
 [sub_resource type="Gradient" id="Gradient_3yo2x"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -76,6 +78,9 @@ sky = SubResource("Sky_m0jva")
 
 [node name="SkyTower" type="Node3D"]
 
+[node name="Player" parent="." instance=ExtResource("1_m0jva")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.99936, 0)
+
 [node name="Ground" type="Node3D" parent="."]
 
 [node name="Terrain3D" type="Terrain3D" parent="Ground"]
@@ -91,3 +96,4 @@ environment = SubResource("Environment_sspmr")
 
 [node name="Debug" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.27293, 1.64771)
+visible = false
