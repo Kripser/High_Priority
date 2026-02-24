@@ -45,6 +45,9 @@ func _refresh_player_list():
 	
 	if not SteamManager.is_connected("avatar_loaded", Callable(self, "_on_avatar_loaded")):
 		SteamManager.connect("avatar_loaded", Callable(self, "_on_avatar_loaded"))
+	if SteamManager.is_host:
+		print("Updating start button, members: ", SteamManager.lobby_members.size())
+		start_button.disabled = SteamManager.lobby_members.size() < 2
 
 func _on_avatar_loaded(user_id: int, buffer: Array):
 	var avatar_rect = player_list.find_child("avatar_" + str(user_id), true, false)
@@ -65,8 +68,38 @@ func _on_leave_pressed():
 func _on_invite_pressed():
 	print("Opening invite dialog for lobby: ", SteamManager.lobby_id)
 	Steam.activateGameOverlayInviteDialog(SteamManager.lobby_id)
+	
+var ready_players = []
 
 func _on_start_pressed():
 	print("Starting game...")
-	# We'll hook this up later
+	var members = SteamManager.lobby_members.duplicate()
+	members.shuffle()
+	
+	var roles = {}
+	roles[members[0]] = "Hitman"
+	roles[members[1]] = "VIP"
+	for i in range(2, members.size()):
+		roles[members[i]] = "Guard"
+	
+	print("Assigned roles: ", roles)
+		
+	for member_id in roles:
+		if member_id == SteamManager.steam_id:
+			SteamManager.my_role = roles[member_id]
+			print("My role: ", SteamManager.my_role)
+			ready_players.append(member_id)
+		else:
+			SteamManager.send_p2p_message(member_id, {
+				"type": "start_game",
+				"role": roles[member_id],
+				"host_id": SteamManager.steam_id
+			})
+	SteamManager.connect("player_ready", Callable(self, "_on_player_ready"))
+	
+func _on_player_ready(steam_id: int):
+	ready_players.append(steam_id)
+	print("Players ready: ", ready_players.size(), "/", SteamManager.lobby_members.size())
+	if ready_players.size() >= SteamManager.lobby_members.size():
+		get_tree().change_scene_to_file("res://Scenes/Game.tscn")
 	

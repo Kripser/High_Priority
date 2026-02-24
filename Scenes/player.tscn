@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxmsudkuo4g8v"]
+[gd_scene format=3 uid="uid://dxmsudkuo4g8v"]
 
 [ext_resource type="Script" uid="uid://c3lu6okgovq8m" path="res://Scripts/Player.gd" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://b0o34poesurhb" path="res://Scripts/PlayerCamera.gd" id="2_cvnsp"]
@@ -8,23 +8,23 @@
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_f60y1"]
 
-[node name="Player" type="Node3D"]
-
-[node name="PlayerBody" type="CharacterBody3D" parent="."]
+[node name="Player" type="CharacterBody3D" unique_id=1983883029]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0159072, 0)
 script = ExtResource("1_v0iea")
 
-[node name="Hitman" parent="PlayerBody" instance=ExtResource("3_6t5aa")]
+[node name="Hitman" parent="." unique_id=1620298631 instance=ExtResource("3_6t5aa")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.0266394, -1.086, 0.0482824)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=569631367]
 visible = false
 mesh = SubResource("CylinderMesh_v0iea")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1239408788]
 shape = SubResource("CylinderShape3D_f60y1")
 
-[node name="Camera3D" type="Camera3D" parent="PlayerBody"]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=855082598]
 transform = Transform3D(1, 0, 0, 0, 0.998975, 0.0452758, 0, -0.0452758, 0.998975, 0, 0.706766, -0.386712)
 fov = 90.0
 script = ExtResource("2_cvnsp")
+
+[node name="Player" type="Node3D" parent="." unique_id=1089636095]

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bt0qg5ytnl43a"]
+
+[ext_resource type="Script" uid="uid://di5r5a5oaq8tp" path="res://Scripts/game.gd" id="1_iukft"]
+
+[node name="Game" type="Node3D" unique_id=765708914]
+script = ExtResource("1_iukft")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1485894093]
+
+[node name="RoleLabel" type="Label" parent="HUD" unique_id=1800072618]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="MapContainer" type="Node3D" parent="." unique_id=6854520]
+
+[node name="Players" type="Node3D" parent="." unique_id=1044750106]
