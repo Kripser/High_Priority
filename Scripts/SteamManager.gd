@@ -5,6 +5,7 @@ var lobby_id: int = 0
 var is_host: bool = false
 var lobby_members: Array = []
 signal avatar_loaded(user_id, buffer)
+signal lobby_members_updated
 
 func _ready():
 	print("Initializing Steam...")
@@ -22,7 +23,7 @@ func _ready():
 
 	# CONNECT SIGNALS
 	Steam.connect("lobby_created", Callable(self, "_on_lobby_created"))
-	Steam.connect("lobby_entered", Callable(self, "_on_lobby_entered"))
+	Steam.connect("lobby_joined", Callable(self, "_on_lobby_entered"))
 	Steam.connect("lobby_chat_update", Callable(self, "_on_lobby_chat_update"))
 	Steam.connect("avatar_loaded", Callable(self, "_on_avatar_loaded"))
 
@@ -56,11 +57,15 @@ func _on_lobby_created(connect_result: int, created_lobby_id: int):
 
 	print("Lobby successfully created: ", lobby_id)
 	_update_lobby_members()
-	get_tree().change_scene_to_file("res://scenes/Lobby.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Lobby.tscn")
 
 
 func _on_lobby_entered(entered_lobby_id: int, permissions: int, locked: bool, response: int):
 	print("Entered lobby callback fired")
+	
+	if response != 1:
+		print("Failed to join lobby, response: ", response)
+		return
 
 	lobby_id = entered_lobby_id
 	is_host = Steam.getLobbyOwner(lobby_id) == steam_id
@@ -69,7 +74,7 @@ func _on_lobby_entered(entered_lobby_id: int, permissions: int, locked: bool, re
 	print("Is host: ", is_host)
 
 	_update_lobby_members()
-	get_tree().change_scene_to_file("res://scenes/Lobby.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Lobby.tscn")
 
 
 func _on_lobby_chat_update(lobby: int, changed_id: int, making_change_id: int, chat_state: int):

@@ -29,15 +29,20 @@ text = "Leave Lobby"
 
 [node name="LobbyTitle" type="Label" parent="." unique_id=819199011]
 layout_mode = 0
-offset_left = 197.0
-offset_top = 241.0
-offset_right = 523.0
-offset_bottom = 264.0
+offset_right = 326.0
+offset_bottom = 23.0
 
 [node name="PlayerList" type="VBoxContainer" parent="." unique_id=191538986]
 layout_mode = 0
-offset_left = 597.0
-offset_top = 173.0
-offset_right = 923.0
-offset_bottom = 409.0
+offset_left = 835.0
+offset_right = 1150.0
+offset_bottom = 645.0
 size_flags_vertical = 3
+
+[node name="InviteButton" type="Button" parent="." unique_id=768132079]
+layout_mode = 0
+offset_left = 596.0
+offset_top = 512.0
+offset_right = 685.0
+offset_bottom = 555.0
+text = "Invite"

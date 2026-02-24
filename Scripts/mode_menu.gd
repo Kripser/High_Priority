@@ -2,10 +2,11 @@ extends Control
 
 
 func _on_join_lobby_pressed() -> void:
-	pass # Replace with function body.
-	print("Steam Running: ", Steam.isSteamRunning())
-	print("Steam ID: ", Steam.getSteamID())
-	print("Name: ", Steam.getPersonaName())
+	var lobby_id = int($VBoxContainer/LobbyIDInput.text)
+	if lobby_id == 0:
+		print("Invalid lobby ID")
+		return
+	SteamManager.join_lobby(lobby_id)
 
 
 func _on_create_lobby_pressed() -> void:

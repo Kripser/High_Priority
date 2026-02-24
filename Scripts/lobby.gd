@@ -10,6 +10,7 @@ func _ready():
 	# Connect leave button
 	$LeaveButton.connect("pressed", Callable(self, "_on_leave_pressed"))
 	start_button.connect("pressed", Callable(self, "_on_start_pressed"))
+	$InviteButton.connect("pressed", Callable(self, "_on_invite_pressed"))
 	
 	# Listen for member updates from SteamManager
 	SteamManager.connect("lobby_members_updated", Callable(self, "_refresh_player_list"))
@@ -60,7 +61,12 @@ func _on_leave_pressed():
 	SteamManager.lobby_id = 0
 	SteamManager.lobby_members.clear()
 	get_tree().change_scene_to_file("res://Scenes/ModeMenu.tscn")
+	
+func _on_invite_pressed():
+	print("Opening invite dialog for lobby: ", SteamManager.lobby_id)
+	Steam.activateGameOverlayInviteDialog(SteamManager.lobby_id)
 
 func _on_start_pressed():
 	print("Starting game...")
 	# We'll hook this up later
+	
