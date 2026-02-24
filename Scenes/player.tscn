@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dxmsudkuo4g8v"]
+[gd_scene load_steps=6 format=3 uid="uid://dxmsudkuo4g8v"]
 
 [ext_resource type="Script" uid="uid://c3lu6okgovq8m" path="res://Scripts/Player.gd" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://b0o34poesurhb" path="res://Scripts/PlayerCamera.gd" id="2_cvnsp"]
+[ext_resource type="PackedScene" uid="uid://bny5gsls25jev" path="res://Assets/Hitman.glb" id="3_6t5aa"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_v0iea"]
 
@@ -13,7 +14,11 @@
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0159072, 0)
 script = ExtResource("1_v0iea")
 
+[node name="Hitman" parent="PlayerBody" instance=ExtResource("3_6t5aa")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.0266394, -1.086, 0.0482824)
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody"]
+visible = false
 mesh = SubResource("CylinderMesh_v0iea")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
