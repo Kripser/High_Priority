@@ -51,12 +51,17 @@ func join_lobby(id: int):
 # ===============================
 
 func start_as_host():
+	Steam.initRelayNetworkAccess()
+	await get_tree().create_timer(1.0).timeout
 	var peer = SteamMultiplayerPeer.new()
-	peer.create_host(lobby_id)
+	var result = peer.create_host(lobby_id)
+	print("Create host result: ", result)
 	multiplayer.multiplayer_peer = peer
 	print("Host Multiplayer peer created")
 	
 func start_as_client():
+	Steam.initRelayNetworkAccess()
+	await get_tree().create_timer(1.0).timeout
 	var peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_id, Steam.getLobbyOwner(lobby_id))
 	multiplayer.multiplayer_peer = peer
