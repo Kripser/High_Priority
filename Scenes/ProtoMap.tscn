@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cl4kbfyf5rm3y"]
 
-[ext_resource type="PackedScene" uid="uid://dxmsudkuo4g8v" path="res://Scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://dxmsudkuo4g8v" path="res://Scenes/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://Scenes/NPC.tscn" id="3_npc"]
 [ext_resource type="Script" path="res://Scripts/ProtoMap.gd" id="2_script"]
 
