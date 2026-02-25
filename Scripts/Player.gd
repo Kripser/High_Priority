@@ -6,6 +6,22 @@ extends CharacterBody3D
 @export var gravity: float = 9.8
 @export var role: String = ""
 
+func _ready():
+	$Hitman.visible = false
+	$MeshInstance3D.visible = true
+
+	var mat = StandardMaterial3D.new()
+	match role:
+		"Hitman":
+			mat.albedo_color = Color(0.1, 0.1, 0.1)
+		"VIP":
+			mat.albedo_color = Color(1.0, 0.8, 0.0)
+		"Guard":
+			mat.albedo_color = Color(0.2, 0.4, 0.9)
+		_:
+			mat.albedo_color = Color(0.5, 0.5, 0.5)
+	$MeshInstance3D.material_override = mat
+
 func _physics_process(delta: float) -> void:
 	
 	if not is_multiplayer_authority():

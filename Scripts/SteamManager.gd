@@ -138,6 +138,14 @@ func _on_avatar_loaded(user_id: int, size: int, buffer: Array):
 # HELPER
 # ===============================
 
+func reset_game_state():
+	game_starting = false
+	my_role = ""
+	if is_host:
+		Steam.setLobbyData(lobby_id, "game_started", "")
+		for member in lobby_members:
+			Steam.setLobbyData(lobby_id, str(member), "")
+
 func _update_lobby_members():
 	lobby_members.clear()
 

@@ -22,9 +22,9 @@ script = ExtResource("1_v0iea")
 
 [node name="Hitman" parent="." unique_id=1620298631 instance=ExtResource("3_6t5aa")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.0266394, -1.086, 0.0482824)
+visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=569631367]
-visible = false
 mesh = SubResource("CylinderMesh_v0iea")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1239408788]

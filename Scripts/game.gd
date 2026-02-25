@@ -6,11 +6,16 @@ const PLAYER = preload("res://Scenes/Player.tscn")
 @onready var map_container = $MapContainer
 @onready var players = $Players
 @onready var role_label = $HUD/RoleLabel
+@onready var pause_menu = $HUD/Pause
 
 var peer_to_steam = {}  # peer_id -> steam_id
 
 func _ready():
 	role_label.text = "Your role: " + SteamManager.my_role
+
+	pause_menu.resume_pressed.connect(_toggle_pause)
+	pause_menu.leave_game_pressed.connect(_leave_game)
+	pause_menu.quit_menu_pressed.connect(_quit_to_menu)
 
 	var map = TEST_MAP.instantiate()
 	map_container.add_child(map)
@@ -30,6 +35,39 @@ func _ready():
 			multiplayer.connected_to_server.connect(func():
 				_register_with_host.rpc_id(1, SteamManager.steam_id)
 			)
+
+func _unhandled_input(event):
+	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
+		_toggle_pause()
+
+func _toggle_pause():
+	pause_menu.visible = !pause_menu.visible
+	Input.set_mouse_mode(
+		Input.MOUSE_MODE_VISIBLE if pause_menu.visible else Input.MOUSE_MODE_CAPTURED
+	)
+
+func _leave_game():
+	if multiplayer.is_server():
+		_return_to_lobby.rpc()
+	else:
+		_do_return_to_lobby()
+
+@rpc("authority", "call_local", "reliable")
+func _return_to_lobby():
+	_do_return_to_lobby()
+
+func _do_return_to_lobby():
+	peer_to_steam.clear()
+	SteamManager.reset_game_state()
+	get_tree().change_scene_to_file("res://Scenes/Lobby.tscn")
+
+func _quit_to_menu():
+	Steam.leaveLobby(SteamManager.lobby_id)
+	SteamManager.lobby_id = 0
+	SteamManager.lobby_members.clear()
+	peer_to_steam.clear()
+	SteamManager.reset_game_state()
+	get_tree().change_scene_to_file("res://Scenes/Menu.tscn")
 
 func _on_peer_connected(peer_id: int):
 	print("Peer connected: ", peer_id)
@@ -54,6 +92,9 @@ func _spawn_players(steam_to_peer: Dictionary):
 	for i in range(SteamManager.lobby_members.size()):
 		var member_id = SteamManager.lobby_members[i]
 		var spawn_point = spawn_points[i % spawn_points.size()]
+
+		if players.get_node_or_null(str(member_id)) != null:
+			continue
 
 		var player = PLAYER.instantiate()
 		player.position = spawn_point.global_position
