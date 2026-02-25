@@ -7,8 +7,6 @@ const PLAYER = preload("res://Scenes/Player.tscn")
 @onready var players = $Players
 @onready var role_label = $HUD/RoleLabel
 
-var remote_players = {}
-
 func _ready():
 	role_label.text = "Your role: " + SteamManager.my_role
 	
@@ -17,7 +15,9 @@ func _ready():
 	map_container.add_child(map)
 	
 	#spawn players
-	if multiplayer.is_server():
+	if SteamManager.is_host:
+		SteamManager.start_as_host()
+		await get_tree().create_timer(0.5).timeout
 		_spawn_players()
 		
 	SteamManager.connect("player_left", Callable(self, "_on_player_left"))

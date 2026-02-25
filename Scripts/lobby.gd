@@ -88,7 +88,6 @@ func _on_start_pressed():
 		
 	Steam.setLobbyData(SteamManager.lobby_id, "game_started", "true")	
 	
-	SteamManager.start_as_host()
 	SteamManager.my_role = roles[SteamManager.steam_id]
 	print("My Role: ", SteamManager.my_role)
 	
