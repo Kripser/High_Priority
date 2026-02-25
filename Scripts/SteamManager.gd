@@ -51,22 +51,31 @@ func join_lobby(id: int):
 # ===============================
 
 func start_as_host():
+	print("Initializing relay network...")
 	Steam.initRelayNetworkAccess()
-	await get_tree().create_timer(1.0).timeout
+	# Wait until relay network is actually ready
+	while Steam.getRelayNetworkStatus() != 1:
+		await get_tree().process_frame
+	print("Relay network ready, creating host peer...")
 	var peer = SteamMultiplayerPeer.new()
 	var result = peer.create_host(lobby_id)
 	print("Create host result: ", result)
-	multiplayer.multiplayer_peer = peer
-	print("Host Multiplayer peer created")
+	if result == OK:
+		multiplayer.multiplayer_peer = peer
+		print("Host multiplayer peer created successfully")
+	else:
+		print("Failed to create host peer!")
 	
 func start_as_client():
+	print("Initializing relay network...")
 	Steam.initRelayNetworkAccess()
-	await get_tree().create_timer(1.0).timeout
+	while Steam.getRelayNetworkStatus() != 1:
+		await get_tree().process_frame
+	print("Relay network ready, creating client peer...")
 	var peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_id, Steam.getLobbyOwner(lobby_id))
 	multiplayer.multiplayer_peer = peer
-	print("Client multiplayer peer created")
-
+	print("Client multiplayer peer created successfully")
 
 # ===============================
 # CALLBACKS (MUST EXIST)
