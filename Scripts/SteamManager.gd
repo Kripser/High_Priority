@@ -4,6 +4,7 @@ var steam_id: int = 0
 var lobby_id: int = 0
 var is_host: bool = false
 var my_role: String = ""
+var game_starting: bool = false
 var lobby_members: Array = []
 
 signal avatar_loaded(user_id, buffer)
@@ -119,8 +120,11 @@ func _on_lobby_chat_update(lobby: int, changed_id: int, making_change_id: int, c
 func _on_lobby_data_update(success: int, lobby: int, member_id: int):
 	if lobby != lobby_id:
 		return
+	if game_starting:
+		return
 	var started = Steam.getLobbyData(lobby_id, "game_started")
 	if started == "true" and not is_host:
+		game_starting = true
 		my_role = Steam.getLobbyData(lobby_id, str(steam_id))
 		print("Recieved role from lobby data: ", my_role)
 		start_as_client()
