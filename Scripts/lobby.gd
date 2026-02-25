@@ -69,7 +69,6 @@ func _on_invite_pressed():
 	print("Opening invite dialog for lobby: ", SteamManager.lobby_id)
 	Steam.activateGameOverlayInviteDialog(SteamManager.lobby_id)
 	
-var ready_players = []
 
 func _on_start_pressed():
 	print("Starting game...")
@@ -85,21 +84,12 @@ func _on_start_pressed():
 	print("Assigned roles: ", roles)
 		
 	for member_id in roles:
-		if member_id == SteamManager.steam_id:
-			SteamManager.my_role = roles[member_id]
-			print("My role: ", SteamManager.my_role)
-			ready_players.append(member_id)
-		else:
-			SteamManager.send_p2p_message(member_id, {
-				"type": "start_game",
-				"role": roles[member_id],
-				"host_id": SteamManager.steam_id
-			})
-	SteamManager.connect("player_ready", Callable(self, "_on_player_ready"))
+		Steam.setLobbyData(SteamManager.lobby_id, str(member_id), roles[member_id])
+		
+	Steam.setLobbyData(SteamManager.lobby_id, "game_started", "true")	
 	
-func _on_player_ready(steam_id: int):
-	ready_players.append(steam_id)
-	print("Players ready: ", ready_players.size(), "/", SteamManager.lobby_members.size())
-	if ready_players.size() >= SteamManager.lobby_members.size():
-		get_tree().change_scene_to_file("res://Scenes/Game.tscn")
+	SteamManager.start_as_host()
+	SteamManager.my_role = roles[SteamManager.steam_id]
+	print("My Role: ", SteamManager.my_role)
 	
+	get_tree().change_scene_to_file("res://Scenes/Game.tscn")

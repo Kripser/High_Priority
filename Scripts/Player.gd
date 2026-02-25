@@ -7,6 +7,10 @@ extends CharacterBody3D
 @export var role: String = ""
 
 func _physics_process(delta: float) -> void:
+	
+	if not is_multiplayer_authority():
+		return
+	
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction = (transform.basis.z * input_dir.y + transform.basis.x * +input_dir.x).normalized()
 
@@ -25,11 +29,4 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("jump"):
 			velocity.y = jump_velocity
 			
-	SteamManager.broadcast_p2p_message({
-		"type": "player_update",
-		"steam_id": SteamManager.steam_id,
-		"position": {"x": position.x, "y": position.y, "z": position.z,},
-		"rotation_y": rotation.y
-	})
-
 	move_and_slide()

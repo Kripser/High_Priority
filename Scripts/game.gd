@@ -16,44 +16,38 @@ func _ready():
 	var map = TEST_MAP.instantiate()
 	map_container.add_child(map)
 	
-	# Spawn local player
-	var spawn_points = map.get_node("SpawnPoints").get_children()
-	var my_index = SteamManager.lobby_members.find(SteamManager.steam_id)
-	var spawn_point = spawn_points[my_index % spawn_points.size()]
+	#spawn players
+	if multiplayer.is_server():
+		_spawn_players()
+		
+	SteamManager.connect("player_left", Callable(self, "_on_player_left"))
 	
-	var player = PLAYER.instantiate()
-	player.position = spawn_point.global_position
-	player.role = SteamManager.my_role
-	players.add_child(player)
+func _spawn_players():
+	var spawn_points = $MapContainer.get_child(0).get_node("SpawnPoints").get_children()
 	
-	#Remote player position listening
-	SteamManager.connect("player_updated", Callable(self, "_on_player_updated"))
-	
-func _on_player_updated(data: Dictionary):
-	var remote_id = data["steam_id"]
-	
-	# Skip if it's our own update
-	if remote_id == SteamManager.steam_id:
-		return
-	
-	# Spawn remote player if not already spawned
-	if not remote_players.has(remote_id):
-		var remote_player = PLAYER.instantiate()
-		# Disable input and camera for remote players
-		remote_player.set_physics_process(false)
-		remote_player.set_process(false)
-		remote_player.set_process_input(false)
-		var camera = remote_player.get_node_or_null("Camera3D")
-		if camera:
-			camera.current = false
-		players.add_child(remote_player)
-		remote_players[remote_id] = remote_player
-		print("Spawned remote player: ", remote_id)
-		return
-	
-	# Update remote player position and rotation
-	var rp = remote_players[remote_id]
-	var target_pos = Vector3(data["position"]["x"], data["position"]["y"], data["position"]["z"])
-	rp.position = rp.position.lerp(target_pos, 0.3)
-	rp.rotation = Vector3(0, data["rotation_y"], 0)
-	
+	for i in range(SteamManager.lobby_members.size()):
+		var member_id = SteamManager.lobby_members[i]
+		var spawn_point = spawn_points[i % spawn_points.size()]
+		
+		var player = PLAYER.instantiate()
+		player.position = spawn_point.global_position
+		player.role = Steam.getLobbyData(SteamManager.lobby_id, str(member_id))
+		
+		# Set multiplayer authority to the owning peer
+		var peer_id = multiplayer.get_peers()
+		player.name = str(member_id)
+		players.add_child(player, true)
+		
+		
+		# Set authority — host is always peer 1
+		if member_id == SteamManager.steam_id:
+			player.set_multiplayer_authority(1)
+		else:
+			var steam_peer = multiplayer.multiplayer_peer
+			player.set_multiplayer_authority(steam_peer.get_peer_id_from_steam64(member_id))
+			
+func _on_player_left(steam_id: int):
+	var player = players.get_node_or_null(str(steam_id))
+	if player:
+		player.queue_free()
+		print("Removed player: ", steam_id)
