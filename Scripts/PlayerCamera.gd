@@ -13,10 +13,18 @@ var bob_timer := 0.0
 var default_position := Vector3.ZERO
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	default_position = position
+	# Authority is set after add_child(), so defer the camera/mouse setup
+	call_deferred("_setup_for_authority")
+
+func _setup_for_authority():
+	if player.is_multiplayer_authority():
+		make_current()
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _unhandled_input(event):
+	if not player.is_multiplayer_authority():
+		return
 	if event is InputEventMouseMotion:
 		# Accumulate rotation
 		yaw -= event.relative.x * mouse_sensitivity
@@ -27,8 +35,10 @@ func _unhandled_input(event):
 
 		# Apply yaw to the player body
 		player.rotation_degrees.y = yaw
-		
+
 func _process(delta: float) -> void:
+	if not player.is_multiplayer_authority():
+		return
 	if not enable_bobbing:
 		return
 
