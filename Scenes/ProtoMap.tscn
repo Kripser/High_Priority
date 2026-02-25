@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cl4kbfyf5rm3y"]
 
 [ext_resource type="PackedScene" uid="uid://dxmsudkuo4g8v" path="res://Scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://Scenes/NPC.tscn" id="3_npc"]
 [ext_resource type="Script" path="res://Scripts/ProtoMap.gd" id="2_script"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
@@ -45,3 +46,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 5, 8)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="NPC1" parent="." instance=ExtResource("3_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, 2)
+
+[node name="NPC2" parent="." instance=ExtResource("3_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, 3)
+
+[node name="NPC3" parent="." instance=ExtResource("3_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -2)
