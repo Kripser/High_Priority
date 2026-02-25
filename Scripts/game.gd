@@ -7,66 +7,61 @@ const PLAYER = preload("res://Scenes/Player.tscn")
 @onready var players = $Players
 @onready var role_label = $HUD/RoleLabel
 
-var peer_to_steam = {}  # peer_id -> steam_id mapping
+var peer_to_steam = {}  # peer_id -> steam_id
 
 func _ready():
 	role_label.text = "Your role: " + SteamManager.my_role
-	
-	# Load map
+
 	var map = TEST_MAP.instantiate()
 	map_container.add_child(map)
-	
-	#spawn players
-	if SteamManager.is_host:
-		SteamManager.start_as_host()
-		multiplayer.peer_connected.connect(_on_peer_connected)
-	else:
-		SteamManager.start_as_client()
-		
-	SteamManager.connect("player_left", Callable(self, "_on_player_left"))
-	
-var connected_peers = []
-func _on_peer_connected(peer_id: int):
-	connected_peers.append(peer_id)
-	
-	# Map peer ID to Steam ID based on order of connection
-	# Lobby members index 0 is host, so skip that
-	var non_host_members = SteamManager.lobby_members.filter(
-		func(id): return id != SteamManager.steam_id
-	)
-	var index = connected_peers.size() - 1
-	if index < non_host_members.size():
-		peer_to_steam[peer_id] = non_host_members[index]
-		print("Mapped peer ", peer_id, " to Steam ID ", non_host_members[index])
-	
-	print("Peer connected: ", peer_id, " total: ", connected_peers.size())
-	if connected_peers.size() >= SteamManager.lobby_members.size() - 1:
-		_spawn_players()
 
-func _spawn_players():
+	SteamManager.connect("player_left", Callable(self, "_on_player_left"))
+
+	if multiplayer.is_server():
+		multiplayer.peer_connected.connect(_on_peer_connected)
+		# Solo host (testing): spawn immediately
+		if SteamManager.lobby_members.size() == 1:
+			_spawn_players({SteamManager.steam_id: 1})
+	else:
+		# Tell the host our Steam ID so it can build the peer->steam map
+		_register_with_host.rpc_id(1, SteamManager.steam_id)
+
+func _on_peer_connected(peer_id: int):
+	print("Peer connected: ", peer_id)
+
+@rpc("any_peer", "reliable")
+func _register_with_host(steam_id: int):
+	var peer_id = multiplayer.get_remote_sender_id()
+	peer_to_steam[peer_id] = steam_id
+	print("Registered peer ", peer_id, " -> Steam ID ", steam_id)
+
+	if peer_to_steam.size() >= SteamManager.lobby_members.size() - 1:
+		# Build a full steam_id -> peer_id map and send it to everyone for spawning
+		var steam_to_peer = {SteamManager.steam_id: 1}  # host is always peer 1
+		for p_id in peer_to_steam:
+			steam_to_peer[peer_to_steam[p_id]] = p_id
+		_spawn_players.rpc(steam_to_peer)
+
+@rpc("authority", "call_local", "reliable")
+func _spawn_players(steam_to_peer: Dictionary):
 	var spawn_points = $MapContainer.get_child(0).get_node("SpawnPoints").get_children()
-	
+
 	for i in range(SteamManager.lobby_members.size()):
 		var member_id = SteamManager.lobby_members[i]
 		var spawn_point = spawn_points[i % spawn_points.size()]
-		
+
 		var player = PLAYER.instantiate()
 		player.position = spawn_point.global_position
 		player.role = Steam.getLobbyData(SteamManager.lobby_id, str(member_id))
 		player.name = str(member_id)
-		players.add_child(player, true)
-		
-		if member_id == SteamManager.steam_id:
-			player.set_multiplayer_authority(1)
-		else:
-			# Find peer ID from our mapping
-			for peer_id in peer_to_steam:
-				if peer_to_steam[peer_id] == member_id:
-					player.set_multiplayer_authority(peer_id)
-					print("Set authority for ", member_id, " to peer ", peer_id)
-			
-func _on_player_left(steam_id: int):
-	var player = players.get_node_or_null(str(steam_id))
+		players.add_child(player)
+
+		var authority = steam_to_peer.get(member_id, 1)
+		player.set_multiplayer_authority(authority)
+		print("Spawned player ", member_id, " with authority peer ", authority)
+
+func _on_player_left(left_steam_id: int):
+	var player = players.get_node_or_null(str(left_steam_id))
 	if player:
 		player.queue_free()
-		print("Removed player: ", steam_id)
+		print("Removed player: ", left_steam_id)

@@ -126,8 +126,8 @@ func _on_lobby_data_update(success: int, lobby: int, member_id: int):
 	if started == "true" and not is_host:
 		game_starting = true
 		my_role = Steam.getLobbyData(lobby_id, str(steam_id))
-		print("Recieved role from lobby data: ", my_role)
-		start_as_client()
+		print("Received role from lobby data: ", my_role)
+		await start_as_client()
 		get_tree().change_scene_to_file("res://Scenes/Game.tscn")
 	
 func _on_avatar_loaded(user_id: int, size: int, buffer: Array):

@@ -74,21 +74,24 @@ func _on_start_pressed():
 	print("Starting game...")
 	var members = SteamManager.lobby_members.duplicate()
 	members.shuffle()
-	
+
 	var roles = {}
 	roles[members[0]] = "Hitman"
 	roles[members[1]] = "VIP"
 	for i in range(2, members.size()):
 		roles[members[i]] = "Guard"
-	
+
 	print("Assigned roles: ", roles)
-		
-	for member_id in roles:
-		Steam.setLobbyData(SteamManager.lobby_id, str(member_id), roles[member_id])
-		
-	Steam.setLobbyData(SteamManager.lobby_id, "game_started", "true")	
-	
+
 	SteamManager.my_role = roles[SteamManager.steam_id]
 	print("My Role: ", SteamManager.my_role)
-	
+
+	# Set up host peer FIRST so clients can connect to it immediately
+	await SteamManager.start_as_host()
+
+	# Now signal clients (host peer is ready to accept connections)
+	for member_id in roles:
+		Steam.setLobbyData(SteamManager.lobby_id, str(member_id), roles[member_id])
+	Steam.setLobbyData(SteamManager.lobby_id, "game_started", "true")
+
 	get_tree().change_scene_to_file("res://Scenes/Game.tscn")
