@@ -29,7 +29,7 @@ func _physics_process(delta: float) -> void:
 		"type": "player_update",
 		"steam_id": SteamManager.steam_id,
 		"position": {"x": position.x, "y": position.y, "z": position.z,},
-		"rotation": {"x": rotation.x, "y": rotation.y, "z": rotation.z,}
+		"rotation_y": rotation.y
 	})
 
 	move_and_slide()

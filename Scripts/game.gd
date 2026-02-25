@@ -41,12 +41,19 @@ func _on_player_updated(data: Dictionary):
 		var remote_player = PLAYER.instantiate()
 		# Disable input and camera for remote players
 		remote_player.set_physics_process(false)
+		remote_player.set_process(false)
+		remote_player.set_process_input(false)
+		var camera = remote_player.get_node_or_null("Camera3D")
+		if camera:
+			camera.current = false
 		players.add_child(remote_player)
 		remote_players[remote_id] = remote_player
 		print("Spawned remote player: ", remote_id)
+		return
 	
 	# Update remote player position and rotation
 	var rp = remote_players[remote_id]
-	rp.position = Vector3(data["position"]["x"], data["position"]["y"], data["position"]["z"])
-	rp.rotation = Vector3(data["rotation"]["x"], data["rotation"]["y"], data["rotation"]["z"])
+	var target_pos = Vector3(data["position"]["x"], data["position"]["y"], data["position"]["z"])
+	rp.position = rp.position.lerp(target_pos, 0.3)
+	rp.rotation = Vector3(0, data["rotation_y"], 0)
 	
