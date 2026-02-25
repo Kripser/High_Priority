@@ -37,7 +37,7 @@ func _ready():
 			)
 
 func _unhandled_input(event):
-	if event.is_action_just_pressed("ui_cancel"):
+	if event is InputEventKey and event.is_action_just_pressed("ui_cancel"):
 		_toggle_pause()
 
 func _toggle_pause():
