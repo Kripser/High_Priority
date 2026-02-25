@@ -54,8 +54,11 @@ func start_as_host():
 	print("Initializing relay network...")
 	Steam.initRelayNetworkAccess()
 	# Wait until relay network is actually ready
-	while Steam.getRelayNetworkStatus() != 1:
+	while true:
+		var status = Steam.getRelayNetworkStatus()
+		print("Relay status: ", status)
 		await get_tree().process_frame
+		
 	print("Relay network ready, creating host peer...")
 	var peer = SteamMultiplayerPeer.new()
 	var result = peer.create_host(lobby_id)
