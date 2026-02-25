@@ -23,8 +23,13 @@ func _ready():
 		if SteamManager.lobby_members.size() == 1:
 			_spawn_players({SteamManager.steam_id: 1})
 	else:
-		# Tell the host our Steam ID so it can build the peer->steam map
-		_register_with_host.rpc_id(1, SteamManager.steam_id)
+		# Wait until the connection to the host is fully established before sending RPC
+		if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+			_register_with_host.rpc_id(1, SteamManager.steam_id)
+		else:
+			multiplayer.connected_to_server.connect(func():
+				_register_with_host.rpc_id(1, SteamManager.steam_id)
+			)
 
 func _on_peer_connected(peer_id: int):
 	print("Peer connected: ", peer_id)
