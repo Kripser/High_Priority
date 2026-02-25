@@ -7,6 +7,8 @@ const PLAYER = preload("res://Scenes/Player.tscn")
 @onready var players = $Players
 @onready var role_label = $HUD/RoleLabel
 
+var peer_to_steam = {}  # peer_id -> steam_id mapping
+
 func _ready():
 	role_label.text = "Your role: " + SteamManager.my_role
 	
@@ -18,8 +20,7 @@ func _ready():
 	if SteamManager.is_host:
 		SteamManager.start_as_host()
 		multiplayer.peer_connected.connect(_on_peer_connected)
-		
-	if not SteamManager.is_host:
+	else:
 		SteamManager.start_as_client()
 		
 	SteamManager.connect("player_left", Callable(self, "_on_player_left"))
@@ -27,8 +28,18 @@ func _ready():
 var connected_peers = []
 func _on_peer_connected(peer_id: int):
 	connected_peers.append(peer_id)
+	
+	# Map peer ID to Steam ID based on order of connection
+	# Lobby members index 0 is host, so skip that
+	var non_host_members = SteamManager.lobby_members.filter(
+		func(id): return id != SteamManager.steam_id
+	)
+	var index = connected_peers.size() - 1
+	if index < non_host_members.size():
+		peer_to_steam[peer_id] = non_host_members[index]
+		print("Mapped peer ", peer_id, " to Steam ID ", non_host_members[index])
+	
 	print("Peer connected: ", peer_id, " total: ", connected_peers.size())
-	# Spawn when all non-host players have connected
 	if connected_peers.size() >= SteamManager.lobby_members.size() - 1:
 		_spawn_players()
 
@@ -42,19 +53,17 @@ func _spawn_players():
 		var player = PLAYER.instantiate()
 		player.position = spawn_point.global_position
 		player.role = Steam.getLobbyData(SteamManager.lobby_id, str(member_id))
-		
-		# Set multiplayer authority to the owning peer
-		var peer_id = multiplayer.get_peers()
 		player.name = str(member_id)
 		players.add_child(player, true)
 		
-		
-		# Set authority — host is always peer 1
 		if member_id == SteamManager.steam_id:
 			player.set_multiplayer_authority(1)
 		else:
-			var steam_peer = multiplayer.multiplayer_peer
-			player.set_multiplayer_authority(steam_peer.get_peer_id_from_steam64(member_id))
+			# Find peer ID from our mapping
+			for peer_id in peer_to_steam:
+				if peer_to_steam[peer_id] == member_id:
+					player.set_multiplayer_authority(peer_id)
+					print("Set authority for ", member_id, " to peer ", peer_id)
 			
 func _on_player_left(steam_id: int):
 	var player = players.get_node_or_null(str(steam_id))
