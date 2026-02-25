@@ -58,7 +58,7 @@ func start_as_host():
 		await get_tree().process_frame
 	print("Relay network ready, creating host peer...")
 	var peer = SteamMultiplayerPeer.new()
-	var result = peer.create_host(lobby_id)
+	var result = peer.create_host(0)
 	print("Create host result: ", result)
 	if result == OK:
 		multiplayer.multiplayer_peer = peer
@@ -73,9 +73,13 @@ func start_as_client():
 		await get_tree().process_frame
 	print("Relay network ready, creating client peer...")
 	var peer = SteamMultiplayerPeer.new()
-	peer.create_client(lobby_id, Steam.getLobbyOwner(lobby_id))
-	multiplayer.multiplayer_peer = peer
-	print("Client multiplayer peer created successfully")
+	var result = peer.create_client(Steam.getLobbyOwner(SteamManager.lobby_id), 0)
+	print("Create client result: ", result)
+	if result == OK:
+		multiplayer.multiplayer_peer = peer
+		print("Client multiplayer peer created successfully")
+	else:
+		print("Failed to create client peer: ", result)
 
 # ===============================
 # CALLBACKS (MUST EXIST)
