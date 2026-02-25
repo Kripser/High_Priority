@@ -4,9 +4,13 @@ extends CharacterBody3D
 @export var sprint_speed: float = 9.0
 @export var jump_velocity: float = 4.5
 @export var gravity: float = 9.8
-@export var role: String = "Test"
+@export var role: String = ""
 
 func _physics_process(delta: float) -> void:
+	
+	if not is_multiplayer_authority():
+		return
+	
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction = (transform.basis.z * input_dir.y + transform.basis.x * +input_dir.x).normalized()
 
@@ -24,5 +28,5 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0
 		if Input.is_action_just_pressed("jump"):
 			velocity.y = jump_velocity
-
+			
 	move_and_slide()
